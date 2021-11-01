@@ -1,0 +1,384 @@
+openapi: 3.0.3
+info:
+  version: v1
+  title: Product API
+  description: Bootcamp product API
+tags:
+  - name: Product
+    description: Working with products
+paths:
+  /products:
+    get:
+      parameters:
+      - $ref: "#/components/parameters/pageParam"
+      - $ref: "#/components/parameters/pageSizeParam"
+      - $ref: "#/components/parameters/sortByParam"
+      - $ref: "#/components/parameters/sortOrderParam"
+      tags:
+        - Product
+      summary: List of products in catalogue
+      description: List of products in catalogue
+      operationId: Products_GetList
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productList"
+    post:
+      tags:
+        - Product
+      summary: Create product
+      description: Create product
+      operationId: Products_Create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createProductCommand"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
+        "400":
+          description: Bad request
+
+  "/products/{productCode}":
+    parameters:
+      - $ref: "#/components/parameters/productCodeParam"
+    get:
+      tags:
+        - Product
+      summary: Get product by code
+      description: Get product by code
+      operationId: Products_GetByCode
+      
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
+    delete:
+      tags:
+        - Product
+      summary: Delete product by code
+      description: Delete product by code
+      operationId: Products_Delete
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
+
+components:
+  parameters:
+    
+    pageParam:
+      name: page
+      in: query
+      description: Page index
+      schema:
+        type: integer
+        default: 1
+        
+    pageSizeParam:
+      name: pageSize
+      in: query
+      description: Number of items on a page
+      schema:
+        type: integer
+        default: 10
+        
+    sortOrderParam:
+      name: sortOrder
+      in: query
+      description: Sort order (`asc` or `desc`). Default is asc
+      schema:
+        "$ref": "#/components/schemas/sortOrderEnum"
+        
+    sortByParam:
+      name: sortBy
+      in: query
+      description: Attribute of the collection item to sort by
+      schema:
+        type: string
+    
+    productCodeParam:
+      in: path
+      name: productCode
+      description: Product code
+      required: true
+      schema:
+        type: string
+
+  schemas:
+            
+    pagedList:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+          description: Total number of items in collection
+          minimum: 0
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Size of the page
+        page:
+          type: integer
+          description: Index of current page
+          minimum: 1
+        totalPages:
+          type: integer
+          description: Total number of pages of set size
+          minimum: 0
+        sortOrder:
+          "$ref": "#/components/schemas/sortOrderEnum"
+        sortBy:
+          type: string
+          description: Attribute of the collection item to sort by
+      description: List with support for paging
+    
+    sortOrderEnum:
+      description: Ascending or descending sort order
+      type: string
+      enum:
+      - asc
+      - desc
+      default: asc
+    
+    product:
+      type: object
+      description: Product object
+      required:
+      - productCode
+      - kind
+      properties:
+        productCode:
+          type: string
+          description: The unique identifier of a Product
+        kind:
+          $ref: '#/components/schemas/productKindsEnum'
+        name:
+          type: string
+          description: Label given to a specific Product to identify or distinguish it from other Products
+        description:
+          type: string
+          description: Basic information about product 
+        status:
+          $ref: '#/components/schemas/productStatusesEnum'
+        isPackage:
+          type: boolean
+          description: Is the product package
+        imageUrl:
+          type: string
+          description: Product image
+        availabilityStart:
+          type: string
+          description: Date from which the product is available
+          format: date
+        availabilityEnd:
+          type: string
+          description: Date until product is product is available
+          format: date
+      discriminator:
+        propertyName: kind
+      example:
+        productCode: "0011112222"
+        kind: electronicAccessProduct
+        name: Name Electronic Acces
+        status: available
+        
+    createProductCommand:
+      description: Command for creating a product
+      required:
+      - productCode
+      - kind
+      properties:
+        productCode:
+          type: string
+          description: The unique identifier of a Product
+        kind:
+          $ref: '#/components/schemas/productKindsEnum'
+        name:
+          type: string
+          description: Label given to a specific Product to identify or distinguish it from other Products
+        description:
+          type: string
+          description: Basic information about product 
+        status:
+          $ref: '#/components/schemas/productStatusesEnum'
+        isPackage:
+          type: boolean
+          description: Is the product package
+        imageUrl:
+          type: string
+          description: Product image
+        availabilityStart:
+          type: string
+          description: Date from which the product is available
+          format: date
+        availabilityEnd:
+          type: string
+          description: Date until product is product is available
+          format: date
+          
+    productList:
+      description: Product list
+      allOf:
+        - $ref: "#/components/schemas/pagedList"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/product"
+                
+    event:
+      description: Event base model is reused within each API to ensure compatibility with CloudEvents specification 1.0
+      type: object
+      required:
+      - type
+      - specversion
+      - source
+      - id
+      - time
+      - subject
+      properties:
+        specversion:
+          description: Specification version
+          type: string
+          enum:
+          - '1.0'
+        type:
+          description: Type
+          type: string
+          example: products.product-created
+        source:
+          description: Source
+          type: string
+          format: uri-reference
+          example: product/products
+        id:
+          description: Identificator
+          type: string
+          example: A234-1234-1234
+        time:
+          description: Time
+          type: string
+          format: date-time
+          example: '2018-04-05T17:31:00Z'
+        subject:
+          description: Subject
+          type: string
+          example: products/129199819929181
+        traceparent:
+          description: Traceparent
+          type: string
+          example: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
+        tracestate:
+          description: Tracestate
+          type: string
+          example: rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
+        data:
+          description: Data
+          type: object
+          example:
+            name: 'product1'
+
+    ################################
+    ############ EVENTS ############
+    ################################
+
+    productCreated:
+      type: object
+      description: Configuration for keys under changed
+      allOf:
+        - $ref: "#/components/schemas/event"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - products.product-created
+            source:
+              type: string
+              enum:
+                - /products
+            data:
+              allOf:
+              - $ref: "#/components/schemas/product"
+      example:
+        specversion: '1.0'
+        type: products.product-created
+        source: /products
+        id: A234-1234-1234
+        time: '2021-01-20T17:31:00Z'
+        subject: 0001
+        data:
+          productCode: "0011112222"
+          kind: electronicAccessProduct
+          name: Name Electronic Acces
+          status: available
+
+    productDeleted:
+      type: object
+      description: Product deleted
+      allOf:
+        - $ref: "#/components/schemas/event"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - products.product-deleted
+            source:
+              type: string
+              enum:
+                - /products
+            data:
+              type: object
+              properties:
+                productCode:
+                  type: string
+      example:
+        specversion: '1.0'
+        type: products.product-deleted
+        source: /products
+        id: A234-1234-1234
+        time: '2021-01-20T17:31:00Z'
+        subject: 0001
+        data:
+          productCode: 0001
+
+    ################################
+    ############ ENUMS #############
+    ################################
+
+    productKindsEnum:
+      enum:
+      - currentAccountProduct
+      - creditLineProduct
+      - cardAccessProduct
+      - electronicAccessProduct
+      - service
+      type: string
+      description: Classifies products according to its nature and scope
+
+    productStatusesEnum:
+      enum:
+      - available
+      - noLongerAvailable
+      - temporarilyUnavailable
+      - comingSoon
+      type: string
+      description: Product avaialability status
