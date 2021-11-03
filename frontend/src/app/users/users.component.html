@@ -1,0 +1,56 @@
+<mat-card class="user-card">
+    <mat-card-title>List of users</mat-card-title>
+    <mat-card-subtitle>Users</mat-card-subtitle>
+    <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="addUser()">
+            <mat-icon>person_add</mat-icon>
+            <span>Add User</span>
+        </button>
+    </mat-menu>
+    <mat-card-content>
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z0 user-table">
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> Id </th>
+                <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Name </th>
+                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="username">
+                <th mat-header-cell *matHeaderCellDef> Username </th>
+                <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef> Phone </th>
+                <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef> Action </th>
+                <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="primary" matTooltip="See user details"
+                        (click)="showUserDetails(element.id)" aria-label="Example icon button with a bookmark icon">
+                        <mat-icon>info</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" matTooltip="Remove user" (click)="removeUser(element.id)"
+                        aria-label="Example icon button with a bookmark icon">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </mat-card-content>
+</mat-card>
