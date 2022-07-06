@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Product.Commands;
 using Product.Database.Entities;
 using Product.Models;
@@ -13,9 +13,9 @@ namespace Product.Mappings
                 .ForMember(d => d.ProductCode, opts => opts.MapFrom(s => s.Code));
 
             CreateMap<PagedSortedList<ProductEntity>, PagedSortedList<Models.Product>>();
-
+            
             CreateMap<CreateProductCommand, ProductEntity>()
-            .ForMember(d => d.Code, opts => opts.MapFrom(s => s.ProductCode));
+                .ForMember(d => d.Code, opts => opts.MapFrom(s => s.ProductCode));
         }
     }
 }

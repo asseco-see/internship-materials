@@ -1,8 +1,8 @@
-namespace Product.Models
+﻿namespace Product.Models
 {
     public enum SortOrder
     {
         Asc,
-        Desc,
+        Desc
     }
 }

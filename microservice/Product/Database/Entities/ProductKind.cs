@@ -1,4 +1,4 @@
-namespace Product.Database.Entities
+﻿namespace Product.Database.Entities
 {
     public enum ProductKind
     {
@@ -6,6 +6,6 @@ namespace Product.Database.Entities
         CreditLineProduct,
         CardAccessProduct,
         ElectronicAccessProduct,
-        Service,
+        Service
     }
 }

@@ -1,5 +1,4 @@
-using System;
-using Product.Database.Entities;
+﻿using Product.Database.Entities;
 
 namespace Product.Models
 {
@@ -13,12 +12,14 @@ namespace Product.Models
 
         public string Description { get; set; }
 
-        public ProductStatus? Status { get; set; }
+        public ProductStatus Status { get; set; }
+
+        public bool IsPackage { get; set; }
 
         public string ImageUrl { get; set; }
 
-        public DateTime? AvailabilityStart { get; set; }
+        public DateTime AvailabilityStart { get; set; }
 
-        public DateTime? AvailabilityEnd { get; set; }
+        public DateTime AvailabilityEnd { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Product.Commands;
 using Product.Database.Entities;
 using Product.Database.Repositories;
@@ -17,21 +16,23 @@ namespace Product.Services
             _productsRepository = productsRepository;
             _mapper = mapper;
         }
-
-        public async Task<PagedSortedList<Models.Product>> GetProducts(int page = 1, int pageSize = 10, string sortBy = null, SortOrder sortOrder = SortOrder.Asc)
-        {
-            var list = await _productsRepository.Get(page, pageSize, sortBy, sortOrder);
-
-            return _mapper.Map<PagedSortedList<Models.Product>>(list);
-        }
-
         public async Task<Models.Product> CreateProduct(CreateProductCommand command)
         {
-            var productToAdd = _mapper.Map<ProductEntity>(command);
+            var entity = _mapper.Map<ProductEntity>(command);
 
-            await _productsRepository.Create(productToAdd);
+            var existingProduct = await _productsRepository.Get(command.ProductCode);
+            if (existingProduct != null)
+            {
+                return null;
+            }
+            var result = await _productsRepository.Create(entity);
 
-            return _mapper.Map<Models.Product>(productToAdd);
+            return _mapper.Map<Models.Product>(result);
+        }
+
+        public async Task<bool> DeleteProduct(string productCode)
+        {
+            return await _productsRepository.Delete(productCode);
         }
 
         public async Task<Models.Product> GetProduct(string productCode)
@@ -46,16 +47,11 @@ namespace Product.Services
             return _mapper.Map<Models.Product>(productEntity);
         }
 
-        public async Task<Models.Product> DeleteProduct(string productCode)
+        public async Task<PagedSortedList<Models.Product>> GetProducts(int page = 1, int pageSize = 10, string sortBy = null, SortOrder sortOrder = SortOrder.Asc)
         {
-            var deletedProduct = await _productsRepository.Delete(productCode);
+            var result = await _productsRepository.List(page, pageSize, sortBy, sortOrder);
 
-            if (deletedProduct == null)
-            {
-                return null;
-            }
-
-            return _mapper.Map<Models.Product>(deletedProduct);
+            return _mapper.Map<PagedSortedList<Models.Product>>(result);
         }
     }
 }

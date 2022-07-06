@@ -1,10 +1,10 @@
-namespace Product.Database.Entities
+﻿namespace Product.Database.Entities
 {
     public enum ProductStatus
     {
         Available,
-        NoLogerAvailable,
+        NoLongerAvailable,
         TemporarilyUnavailable,
-        ComingSoon,
+        ComingSoon
     }
 }

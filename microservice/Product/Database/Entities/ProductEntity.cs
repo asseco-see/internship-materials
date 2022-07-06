@@ -1,6 +1,4 @@
-using System;
-
-namespace Product.Database.Entities
+﻿namespace Product.Database.Entities
 {
     public class ProductEntity
     {
@@ -13,6 +11,8 @@ namespace Product.Database.Entities
         public string Description { get; set; }
 
         public ProductStatus? Status { get; set; }
+
+        public bool IsPackage { get; set; }
 
         public string ImageUrl { get; set; }
 

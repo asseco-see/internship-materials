@@ -1,6 +1,5 @@
-using System;
+﻿using Product.Database.Entities;
 using System.ComponentModel.DataAnnotations;
-using Product.Database.Entities;
 
 namespace Product.Commands
 {
@@ -17,6 +16,8 @@ namespace Product.Commands
         public string Description { get; set; }
 
         public ProductStatus? Status { get; set; }
+
+        public bool IsPackage { get; set; }
 
         public string ImageUrl { get; set; }
 
